@@ -81,7 +81,7 @@ footer a{color:var(--mut)}
 <section class="hero">
 <h1>Factur-X &amp; ZUGFeRD validator, free.<br>Compliant e-invoices from JSON, one API call.</h1>
 <p class="sub">Check any Factur-X / ZUGFeRD PDF or EN 16931 CII XML against the official schema and business rules, including the French 2026 (Flux 2) ruleset. Or generate compliant e-invoices programmatically. No signup for the validator. Nothing is stored.</p>
-<div class="badges"><span class="badge">EN 16931 XSD + full schematron</span><span class="badge">French 2026 CTC rules</span><span class="badge">Stateless: zero retention</span><span class="badge">Factur-X 1.09 / ZUGFeRD 2.3</span></div>
+<div class="badges"><span class="badge">EN 16931 XSD + full schematron</span><span class="badge">French 2026 CTC rules</span><span class="badge">Stateless: zero retention</span><span class="badge">Factur-X 1.09 / ZUGFeRD 2.5</span></div>
 </section>
 
 <section class="card anchor" id="validator">
@@ -131,7 +131,7 @@ curl -X POST https://facturata.p.rapidapi.com/v1/invoices \
 <div class="tier"><b>Ultra</b><div class="price">$49<small>/mo</small></div><ul><li>5,000 documents/month</li><li>Everything in Pro</li></ul></div>
 <div class="tier"><b>Mega</b><div class="price">$149<small>/mo</small></div><ul><li>30,000 documents/month</li><li>Everything in Pro</li></ul></div>
 </div>
-<p class="note">Billing, keys and metering are handled by RapidAPI. Compare: per-recipient credential platforms charge this for a handful of invoices; document APIs with e-invoice support start at ~$29/mo with far fewer compliance checks.</p>
+<p class="note">Billing, keys and metering are handled by RapidAPI. Compare: generic document-generation APIs run ~€19-49/mo and rarely include the full official EN 16931 rule set or the French CTC checks.</p>
 </section>
 
 <section class="card anchor" id="mandates">
@@ -139,7 +139,7 @@ curl -X POST https://facturata.p.rapidapi.com/v1/invoices \
 <table class="mand">
 <tr><th>Country</th><th>Receive mandatory</th><th>Issue mandatory</th><th>Accepted formats</th></tr>
 <tr><td><b>Germany</b></td><td>Since Jan 2025 (all B2B)</td><td>2027 (&gt;€800k turnover), 2028 (all)</td><td>ZUGFeRD 2.x / Factur-X, XRechnung</td></tr>
-<tr><td><b>France</b></td><td>Sept 2026 (all businesses)</td><td>Sept 2026 (large/mid), Sept 2027 (SME)</td><td>Factur-X, UBL, CII via PDP platforms</td></tr>
+<tr><td><b>France</b></td><td>Sept 2026 (all businesses)</td><td>Sept 2026 (large/mid), Sept 2027 (SME)</td><td>Factur-X, UBL, CII via approved platforms (PA, formerly PDP)</td></tr>
 <tr><td><b>Belgium</b></td><td colspan="2">B2B via Peppol from Jan 2026</td><td>Peppol BIS (EN 16931)</td></tr>
 <tr><td><b>EU (ViDA)</b></td><td colspan="2">Cross-border digital reporting from 2030</td><td>EN 16931 family</td></tr>
 </table>
@@ -151,7 +151,7 @@ curl -X POST https://facturata.p.rapidapi.com/v1/invoices \
 <details><summary>What exactly does the validator check?</summary><p>Three layers: (1) structure against the official Factur-X / ZUGFeRD XSD for the detected profile, (2) the full EN 16931 schematron business rules (the BR-*, BR-CO-*, BR-S/AE/IC-* rules on totals, VAT breakdowns, required fields), and (3) optionally the French CTC (Flux 2) ruleset for the 2026 mandate. PDF inputs first get their embedded XML extracted and checked for presence and readability.</p></details>
 <details><summary>What is the difference between Factur-X and ZUGFeRD?</summary><p>Technically none at profile level: ZUGFeRD 2.x (Germany) and Factur-X (France) are the same standard published by FeRD and FNFE-MPE. Both embed EN 16931 CII XML inside a PDF/A-3 file.</p></details>
 <details><summary>Do you support XRechnung?</summary><p>Validation detects and checks CII-syntax XRechnung against EN 16931 base rules today; the KoSIT-specific ruleset is on the roadmap. Generation currently targets Factur-X profiles (BASIC WL, EN 16931, EXTENDED).</p></details>
-<details><summary>Is this legal advice? Can you certify my invoices?</summary><p>No. Facturata performs technical generation and validation against the published standards. It does not certify legal compliance and does not replace your accountant, tax advisor or (in France) your registered PDP platform.</p></details>
+<details><summary>Is this legal advice? Can you certify my invoices?</summary><p>No. Facturata performs technical generation and validation against the published standards. It does not certify legal compliance and does not replace your accountant, tax advisor or (in France) your approved platform (PA).</p></details>
 <details><summary>What happens to my data?</summary><p>Documents are processed in memory and returned in the response. No database, no object storage, no retention. That is also why the service can be this cheap.</p></details>
 </section>
 
