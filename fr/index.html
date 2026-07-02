@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Validateur Factur-X gratuit + API de facturation électronique | Facturata</title>
+<meta name="description" content="Validez gratuitement vos factures Factur-X, ZUGFeRD et EN 16931 (XSD + Schematron + règles françaises 2026). Générez des factures électroniques conformes depuis du JSON, en un appel d’API. Conçu pour la réforme 2026-2028.">
+<link rel="canonical" href="https://facturata.com/fr/">
+<link rel="alternate" hreflang="en" href="https://facturata.com/">
+<link rel="alternate" hreflang="de" href="https://facturata.com/de/">
+<link rel="alternate" hreflang="fr" href="https://facturata.com/fr/">
+<link rel="alternate" hreflang="x-default" href="https://facturata.com/">
+<meta property="og:title" content="Facturata – Validateur Factur-X gratuit &amp; API de facturation électronique">
+<meta property="og:description" content="Validateur Factur-X / ZUGFeRD gratuit avec le Schematron EN 16931 complet et les règles CTC françaises 2026. Plus une API qui transforme du JSON en factures électroniques conformes.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://facturata.com/fr/">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Qu’est-ce que Factur-X ?","acceptedAnswer":{"@type":"Answer","text":"Factur-X (identique au format allemand ZUGFeRD 2.x) est le format hybride franco-allemand de facture électronique : un PDF lisible par l’humain contenant un fichier XML structuré, conforme à la norme européenne EN 16931. C’est l’un des formats acceptés pour la réforme française de la facturation électronique 2026-2027 et pour les obligations B2B allemandes."}},
+{"@type":"Question","name":"Quand la facturation électronique devient-elle obligatoire en France et en Allemagne ?","acceptedAnswer":{"@type":"Answer","text":"France : toutes les entreprises devront pouvoir recevoir des factures électroniques à partir du 1er septembre 2026 ; les grandes entreprises et ETI devront en émettre dès 2026, les PME et TPE à partir de 2027. Allemagne : toutes les entreprises assujetties à la TVA doivent pouvoir recevoir des factures électroniques depuis le 1er janvier 2025 ; l’émission devient obligatoire en 2027 (CA supérieur à 800 k€) puis en 2028 (toutes les entreprises)."}},
+{"@type":"Question","name":"Comment valider une facture Factur-X ou ZUGFeRD ?","acceptedAnswer":{"@type":"Answer","text":"Déposez le PDF ou le XML dans le validateur gratuit de cette page. Il extrait le XML embarqué, le valide contre le XSD officiel EN 16931 et les règles métier Schematron, et peut appliquer en plus le référentiel CTC français 2026 (Flux 2). Vous obtenez une liste claire des erreurs et des avertissements."}},
+{"@type":"Question","name":"Mes données de facturation sont-elles conservées ?","acceptedAnswer":{"@type":"Answer","text":"Non. Les documents sont traités en mémoire, jamais écrits sur disque ni conservés. Le service est sans état par conception."}}]}
+</script>
+<style>
+:root{--acc:#14532d;--acc2:#16a34a;--ink:#111827;--mut:#5b6472;--bg:#f7f9f8;--line:#e2e8f0;--warn:#b45309;--err:#b91c1c;--ok:#15803d}
+*{box-sizing:border-box}body{margin:0;font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+.wrap{max-width:1020px;margin:0 auto;padding:0 20px}
+header{background:var(--acc);color:#fff}
+header .wrap{display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+.logo{font-weight:800;font-size:20px;letter-spacing:.3px}.logo span{color:#86efac}
+nav a{color:#e5f3ea;text-decoration:none;margin-left:22px;font-size:14.5px}
+.hero{padding:52px 0 8px;text-align:center}
+h1{font-size:clamp(26px,4.4vw,40px);line-height:1.2;margin:0 0 12px}
+.sub{color:var(--mut);max-width:760px;margin:0 auto 8px;font-size:17.5px}
+.badges{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:18px 0 6px}
+.badge{background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:13px;color:var(--mut)}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px;margin:26px 0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.drop{border:2px dashed #9db8a8;border-radius:12px;padding:38px 20px;text-align:center;cursor:pointer;transition:.15s;background:#fbfdfc}
+.drop.on{border-color:var(--acc2);background:#f0fdf4}
+.drop b{color:var(--acc)}
+.row{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:14px}
+select,button.primary{font:inherit;padding:10px 16px;border-radius:9px;border:1px solid var(--line)}
+button.primary{background:var(--acc);color:#fff;border:0;font-weight:600;cursor:pointer;padding:11px 26px}
+button.primary:hover{background:#0f3f22}
+.note{font-size:13px;color:var(--mut);margin-top:10px}
+#report{display:none;margin-top:22px;text-align:left}
+.verdict{font-size:20px;font-weight:700;padding:14px 18px;border-radius:10px;margin-bottom:14px}
+.v-ok{background:#f0fdf4;color:var(--ok);border:1px solid #bbf7d0}
+.v-bad{background:#fef2f2;color:var(--err);border:1px solid #fecaca}
+.kv{display:grid;grid-template-columns:190px 1fr;gap:4px 14px;font-size:14.5px;margin:10px 0}
+.kv div:nth-child(odd){color:var(--mut)}
+.finding{border-left:3px solid var(--err);background:#fff7f7;padding:8px 12px;margin:8px 0;font-size:14px;border-radius:0 8px 8px 0}
+.finding.warn{border-color:var(--warn);background:#fffbf3}
+.finding code{font-size:12.5px;color:var(--mut)}
+.spin{display:none;margin-top:16px;color:var(--mut)}
+.spin.on{display:block}
+h2{font-size:26px;margin:8px 0 6px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:18px}
+.tier{border:1px solid var(--line);border-radius:12px;padding:20px;background:#fff;position:relative}
+.tier.hot{border-color:var(--acc2);box-shadow:0 0 0 3px #dcfce7}
+.tier .price{font-size:26px;font-weight:800;margin:6px 0}
+.tier .price small{font-size:13px;color:var(--mut);font-weight:400}
+.tier ul{padding-left:18px;margin:10px 0;color:var(--mut);font-size:14.5px}
+pre{background:#0b1220;color:#d1e7dd;border-radius:10px;padding:18px;overflow-x:auto;font-size:13px;line-height:1.5}
+pre .c{color:#7c94a8}
+.cta{display:inline-block;background:var(--acc);color:#fff;text-decoration:none;padding:12px 26px;border-radius:9px;font-weight:600;margin-top:8px}
+.cta.ghost{background:#fff;color:var(--acc);border:1.5px solid var(--acc)}
+table.mand{width:100%;border-collapse:collapse;font-size:14.5px}
+table.mand th,table.mand td{border:1px solid var(--line);padding:9px 12px;text-align:left}
+table.mand th{background:#f1f5f2}
+details{border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:10px 0;background:#fff}
+summary{font-weight:600;cursor:pointer}
+footer{color:var(--mut);font-size:13.5px;padding:30px 0 40px;text-align:center}
+footer a{color:var(--mut)}
+.anchor{scroll-margin-top:20px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<div class="logo">Factur<span>ata</span></div>
+<nav><a href="#validator">Validateur gratuit</a><a href="#api">API</a><a href="#pricing">Tarifs</a><a href="#mandates">Réforme 2026</a><a href="#faq">FAQ</a><span style="margin-left:22px;font-size:13.5px;color:#a7cdb6"><a href="/" hreflang="en" style="margin-left:0;font-size:13.5px">EN</a> · <a href="/de/" hreflang="de" style="margin-left:0;font-size:13.5px">DE</a> · <b style="color:#fff">FR</b></span></nav>
+</div></header>
+
+<div class="wrap">
+<section class="hero">
+<h1>Validateur Factur-X &amp; ZUGFeRD, gratuit.<br>Des factures électroniques conformes depuis du JSON, en un appel d’API.</h1>
+<p class="sub">Vérifiez n’importe quel PDF Factur-X / ZUGFeRD ou XML CII EN 16931 contre le schéma officiel et les règles métier, y compris le référentiel français 2026 (Flux 2). Ou générez des factures électroniques conformes par API. Sans inscription pour le validateur. Rien n’est conservé.</p>
+<div class="badges"><span class="badge">XSD EN 16931 + Schematron complet</span><span class="badge">Règles CTC françaises 2026</span><span class="badge">Sans état&nbsp;: zéro conservation</span><span class="badge">Factur-X 1.09 / ZUGFeRD 2.5</span></div>
+</section>
+
+<section class="card anchor" id="validator">
+<h2>Validateur gratuit de factures électroniques</h2>
+<div class="drop" id="drop"><b>Déposez ici un PDF Factur-X / ZUGFeRD ou un XML CII</b><br>ou cliquez pour choisir un fichier (3 Mo max)<input type="file" id="file" hidden accept=".pdf,.xml"></div>
+<div class="row">
+<select id="ruleset">
+<option value="base">Règles EN 16931 (Factur-X / ZUGFeRD)</option>
+<option value="fr-ctc">EN 16931 + CTC français 2026 (Flux 2)</option>
+</select>
+<button class="primary" id="go" disabled>Valider</button>
+</div>
+<div class="spin" id="spin">⏳ <span id="spinmsg">Validation en cours…</span></div>
+<div class="note">Le traitement gratuit tourne sur une capacité qui se met en veille&nbsp;: la première requête de l’heure peut prendre jusqu’à une minute. Les fichiers sont traités uniquement en mémoire. Les libellés des règles et des erreurs proviennent du référentiel officiel et sont affichés en anglais (textes officiels).</div>
+<div id="report"></div>
+</section>
+
+<section class="card anchor" id="api">
+<h2>L’API de facturation électronique</h2>
+<p>Envoyez du JSON simple, recevez un <b>PDF Factur-X conforme (avec XML embarqué)</b> ou le XML CII brut. Les totaux et la ventilation de TVA sont calculés côté serveur, et chaque document est validé contre le XSD officiel EN 16931 et le Schematron avant d’être renvoyé. En plus&nbsp;: des endpoints de validation et d’extraction pour les documents entrants.</p>
+<pre><code><span class="c"># Un appel : du JSON en entrée, une facture Factur-X conforme en sortie</span>
+curl -X POST https://facturata.p.rapidapi.com/v1/invoices \
+  -H "Content-Type: application/json" \
+  -H "X-RapidAPI-Key: YOUR_KEY" \
+  -d '{
+    "invoice": {
+      "invoice_number": "2026-0042",
+      "issue_date": "2026-07-02",
+      "currency": "EUR",
+      "seller": {"name":"ACME SARL","vat_id":"FR40303265045",
+                 "address":{"line1":"12 Rue Exemple","postcode":"75001","city":"Paris","country":"FR"}},
+      "buyer":  {"name":"Beispiel GmbH",
+                 "address":{"line1":"Musterstr. 1","postcode":"10115","city":"Berlin","country":"DE"}},
+      "lines": [{"description":"Consulting","quantity":10,"unit":"HUR","unit_price":"95.00","vat_rate":"20"}]
+    }
+  }'
+<span class="c"># -> {"facturx_pdf_base64":"...","xml_base64":"...","totals":{...},"validation":{"xsd":"passed","schematron":{"passed":true}}}</span></code></pre>
+<p>Fonctionne depuis n’importe quel langage et depuis les outils no-code (Make, Zapier, n8n)&nbsp;: c’est un simple appel HTTPS. PDF visuel en français, anglais ou allemand, avec votre couleur d’accent.</p>
+<a class="cta" id="rapidapi-cta" href="https://rapidapi.com/certlyapplive/api/facturata" rel="noopener">Obtenir une clé d’API →</a>
+</section>
+
+<section class="card anchor" id="pricing">
+<h2>Tarifs</h2>
+<div class="grid3">
+<div class="tier"><b>Free</b><div class="price">$0<small>/mois</small></div><ul><li>15 documents/mois</li><li>Tous les endpoints</li><li>Validateur web illimité</li></ul></div>
+<div class="tier hot"><b>Pro</b><div class="price">$19<small>/mois</small></div><ul><li>500 documents/mois</li><li>Génération + validation + extraction</li><li>Référentiel CTC français</li><li>Résiliable à tout moment</li></ul></div>
+<div class="tier"><b>Ultra</b><div class="price">$49<small>/mois</small></div><ul><li>5&nbsp;000 documents/mois</li><li>Tout Pro inclus</li></ul></div>
+<div class="tier"><b>Mega</b><div class="price">$149<small>/mois</small></div><ul><li>30&nbsp;000 documents/mois</li><li>Tout Pro inclus</li></ul></div>
+</div>
+<p class="note">La facturation, les clés et le comptage sont gérés par RapidAPI. À titre de comparaison&nbsp;: les API génériques de génération de documents coûtent environ 19 à 49 €/mois et incluent rarement le référentiel officiel EN 16931 complet ou les contrôles CTC français.</p>
+<a class="cta" href="https://rapidapi.com/certlyapplive/api/facturata" rel="noopener">Commencer gratuitement (15 docs/mois) →</a>
+</section>
+
+<section class="card anchor" id="mandates">
+<h2>La réforme de la facturation électronique en Europe, en un tableau</h2>
+<table class="mand">
+<tr><th>Pays</th><th>Réception obligatoire</th><th>Émission obligatoire</th><th>Formats acceptés</th></tr>
+<tr><td><b>France</b></td><td>Sept. 2026 (toutes les entreprises)</td><td>Sept. 2026 (GE/ETI), sept. 2027 (PME/TPE)</td><td>Factur-X, UBL, CII via une plateforme agréée (PA, anciennement PDP)</td></tr>
+<tr><td><b>Allemagne</b></td><td>Depuis janv. 2025 (tout le B2B)</td><td>2027 (CA &gt; 800&nbsp;k€), 2028 (toutes)</td><td>ZUGFeRD 2.x / Factur-X, XRechnung</td></tr>
+<tr><td><b>Belgique</b></td><td colspan="2">B2B via Peppol à partir de janv. 2026</td><td>Peppol BIS (EN 16931)</td></tr>
+<tr><td><b>UE (ViDA)</b></td><td colspan="2">Déclaration électronique transfrontalière à partir de 2030</td><td>Famille EN 16931</td></tr>
+</table>
+<p class="note">Dates synthétisées à partir des calendriers officiels&nbsp;; confirmez toujours vos obligations précises avec votre expert-comptable ou votre conseiller fiscal.</p>
+</section>
+
+<section class="anchor" id="faq">
+<h2 style="margin-top:26px">FAQ</h2>
+<details><summary>Que vérifie exactement le validateur&nbsp;?</summary><p>Trois niveaux&nbsp;: (1) la structure contre le XSD officiel Factur-X / ZUGFeRD du profil détecté, (2) l’ensemble des règles métier Schematron EN 16931 (les règles BR-*, BR-CO-*, BR-S/AE/IC-* sur les totaux, la ventilation de TVA et les mentions obligatoires) et (3) en option le référentiel CTC français (Flux 2) pour la réforme 2026. Pour les PDF, le XML embarqué est d’abord extrait, puis sa présence et sa lisibilité sont contrôlées.</p></details>
+<details><summary>Quelle est la différence entre Factur-X et ZUGFeRD&nbsp;?</summary><p>Aucune sur le plan technique au niveau des profils&nbsp;: Factur-X (France) et ZUGFeRD 2.x (Allemagne) sont le même standard, publié par le FNFE-MPE et le FeRD. Les deux embarquent un XML CII EN 16931 dans un fichier PDF/A-3.</p></details>
+<details><summary>Prenez-vous en charge XRechnung&nbsp;?</summary><p>La validation détecte les XRechnung en syntaxe CII et les contrôle aujourd’hui contre les règles de base EN 16931&nbsp;; le référentiel spécifique KoSIT est sur la roadmap. La génération cible actuellement les profils Factur-X (BASIC WL, EN 16931, EXTENDED).</p></details>
+<details><summary>Est-ce un conseil juridique&nbsp;? Pouvez-vous certifier mes factures&nbsp;?</summary><p>Non. Facturata effectue la génération et la validation techniques par rapport aux standards publiés. Le service ne certifie pas la conformité légale et ne remplace ni votre expert-comptable, ni votre conseiller fiscal, ni votre plateforme agréée (PA).</p></details>
+<details><summary>Que deviennent mes données&nbsp;?</summary><p>Les documents sont traités en mémoire et renvoyés dans la réponse. Pas de base de données, pas de stockage objet, pas de conservation. C’est aussi ce qui permet un tarif aussi bas.</p></details>
+</section>
+
+<footer>
+<div>© 2026 Facturata · <a href="#validator">Validateur</a> · <a href="#api">API</a> · Contact&nbsp;: certly.app.live+facturata@gmail.com</div>
+<div style="margin-top:6px">Facturata fournit un traitement technique de documents, pas de conseil juridique ou fiscal.</div>
+</footer>
+</div>
+
+<script>
+const API_BASE = "https://facturata-api.onrender.com";
+let fileData = null, fileName = "";
+const drop = document.getElementById('drop'), fi = document.getElementById('file'),
+      go = document.getElementById('go'), spin = document.getElementById('spin'),
+      spinmsg = document.getElementById('spinmsg'), report = document.getElementById('report');
+drop.onclick = () => fi.click();
+drop.ondragover = e => {e.preventDefault(); drop.classList.add('on');};
+drop.ondragleave = () => drop.classList.remove('on');
+drop.ondrop = e => {e.preventDefault(); drop.classList.remove('on'); if(e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);};
+fi.onchange = () => fi.files[0] && setFile(fi.files[0]);
+function setFile(f){
+  if(f.size > 3*1024*1024){alert("3 Mo maximum dans le validateur gratuit."); return;}
+  const r = new FileReader();
+  r.onload = () => {fileData = r.result.split(',')[1]; fileName = f.name;
+    drop.innerHTML = "<b>"+f.name+"</b> ("+(f.size/1024).toFixed(0)+" Ko) — prêt";
+    go.disabled = false;};
+  r.readAsDataURL(f);
+}
+async function callApi(attempt){
+  const ctl = new AbortController();
+  const t = setTimeout(()=>ctl.abort(), 90000);
+  try{
+    const res = await fetch(API_BASE + "/free/validate", {method:"POST", signal: ctl.signal,
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({file_base64: fileData, check: document.getElementById('ruleset').value})});
+    clearTimeout(t);
+    return res;
+  }catch(err){
+    clearTimeout(t);
+    if(attempt < 2){ spinmsg.textContent = "Réveil du validateur (la capacité gratuite se met en veille, ~60 s)…";
+      await new Promise(r=>setTimeout(r, 8000)); return callApi(attempt+1); }
+    throw err;
+  }
+}
+go.onclick = async () => {
+  report.style.display="none"; spin.classList.add('on'); spinmsg.textContent="Validation en cours…"; go.disabled=true;
+  try{
+    const res = await callApi(0);
+    const j = await res.json();
+    if(!res.ok){ throw new Error(j.detail || res.status); }
+    render(j);
+  }catch(e){
+    report.innerHTML = '<div class="verdict v-bad">Validation impossible&nbsp;: '+(e.message||e)+'</div>';
+    report.style.display="block";
+  }
+  spin.classList.remove('on'); go.disabled=false;
+};
+function esc(s){return String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function render(j){
+  let h = "";
+  if(j.error){ h += '<div class="verdict v-bad">✗ Facture électronique non valide</div><div class="finding">'+esc(j.error)+'</div>'; }
+  else{
+    h += j.valid ? '<div class="verdict v-ok">✓ Valide — '+esc(j.flavor)+' (profil '+esc(j.profile||"?")+')</div>'
+                 : '<div class="verdict v-bad">✗ Non valide — '+((j.checks.xsd.errors||[]).length + (j.checks.schematron.errors||[]).length)+' erreur(s) détectée(s)</div>';
+    if(j.summary && Object.keys(j.summary).length){
+      h += '<div class="kv">';
+      for(const [k,v] of Object.entries(j.summary)) h += '<div>'+esc(k.replace(/_/g,' '))+'</div><div><b>'+esc(v)+'</b></div>';
+      h += '</div>';
+    }
+    const errs = [...(j.checks.xsd.errors||[]), ...(j.checks.schematron.errors||[])];
+    const warns = j.checks.schematron.warnings||[];
+    errs.forEach(e => h += '<div class="finding"><b>'+esc(e.rule||"Erreur")+'</b> — '+esc(e.text)+(e.location?'<br><code>'+esc(e.location)+'</code>':'')+'</div>');
+    warns.forEach(w => h += '<div class="finding warn"><b>'+esc(w.rule||"Avertissement")+'</b> — '+esc(w.text)+'</div>');
+    if(j.valid && !warns.length) h += '<div class="note">Aucun avertissement. Ce document passe le référentiel officiel EN 16931'+(j.checks.ruleset==='fr-ctc'?' ainsi que les contrôles CTC français':'')+'.</div>';
+    h += '<div class="note" style="margin-top:14px">Besoin de valider en masse ou de générer des factures conformes&nbsp;? <a href="#api">Passez par l’API</a>.</div>';
+  }
+  report.innerHTML = h; report.style.display = "block";
+}
+</script>
+</body>
+</html>
