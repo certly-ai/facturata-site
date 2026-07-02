@@ -1,4 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>https://facturata.com/</loc><changefreq>weekly</changefreq></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<url>
+  <loc>https://facturata.com/</loc>
+  <changefreq>weekly</changefreq>
+  <xhtml:link rel="alternate" hreflang="en" href="https://facturata.com/"/>
+  <xhtml:link rel="alternate" hreflang="de" href="https://facturata.com/de/"/>
+  <xhtml:link rel="alternate" hreflang="fr" href="https://facturata.com/fr/"/>
+  <xhtml:link rel="alternate" hreflang="x-default" href="https://facturata.com/"/>
+</url>
+<url>
+  <loc>https://facturata.com/de/</loc>
+  <changefreq>weekly</changefreq>
+  <xhtml:link rel="alternate" hreflang="en" href="https://facturata.com/"/>
+  <xhtml:link rel="alternate" hreflang="de" href="https://facturata.com/de/"/>
+  <xhtml:link rel="alternate" hreflang="fr" href="https://facturata.com/fr/"/>
+  <xhtml:link rel="alternate" hreflang="x-default" href="https://facturata.com/"/>
+</url>
+<url>
+  <loc>https://facturata.com/fr/</loc>
+  <changefreq>weekly</changefreq>
+  <xhtml:link rel="alternate" hreflang="en" href="https://facturata.com/"/>
+  <xhtml:link rel="alternate" hreflang="de" href="https://facturata.com/de/"/>
+  <xhtml:link rel="alternate" hreflang="fr" href="https://facturata.com/fr/"/>
+  <xhtml:link rel="alternate" hreflang="x-default" href="https://facturata.com/"/>
+</url>
 </urlset>
