@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Factur-X & ZUGFeRD Validator + EU e-Invoicing API | Facturata</title>
+<meta name="description" content="Validate Factur-X, ZUGFeRD and EN 16931 e-invoices free (XSD + schematron + French 2026 rules). Generate compliant e-invoices from JSON with one API call. Built for the 2026-2028 EU mandates.">
+<link rel="canonical" href="https://facturata.com/">
+<meta property="og:title" content="Facturata — Free Factur-X Validator & EU e-Invoicing API">
+<meta property="og:description" content="Free Factur-X / ZUGFeRD validator with full EN 16931 schematron and French 2026 CTC rules. Plus an API that turns JSON into compliant e-invoices.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://facturata.com/">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"What is Factur-X?","acceptedAnswer":{"@type":"Answer","text":"Factur-X (identical to German ZUGFeRD 2.x) is the Franco-German hybrid e-invoice format: a human-readable PDF with an embedded machine-readable XML file that follows the EN 16931 European standard. It is one of the accepted formats for the French 2026-2027 e-invoicing mandate and the German B2B e-invoicing rules."}},
+{"@type":"Question","name":"When does e-invoicing become mandatory in France and Germany?","acceptedAnswer":{"@type":"Answer","text":"Germany: all VAT-registered businesses must be able to receive e-invoices since January 1, 2025; issuing becomes mandatory in 2027 (turnover above €800k) and 2028 (everyone). France: all businesses must be able to receive e-invoices from September 1, 2026; large and mid-size companies must issue from 2026, SMEs from 2027."}},
+{"@type":"Question","name":"How do I validate a Factur-X or ZUGFeRD invoice?","acceptedAnswer":{"@type":"Answer","text":"Drop the PDF or XML into the free validator on this page. It extracts the embedded XML, validates it against the official EN 16931 XSD and schematron business rules, and can additionally apply the French 2026 CTC (Flux 2) ruleset. You get a clear list of errors and warnings."}},
+{"@type":"Question","name":"Is my invoice data stored?","acceptedAnswer":{"@type":"Answer","text":"No. Documents are processed in memory and never written to disk or stored. The service is stateless by design."}}]}
+</script>
+<style>
+:root{--acc:#14532d;--acc2:#16a34a;--ink:#111827;--mut:#5b6472;--bg:#f7f9f8;--line:#e2e8f0;--warn:#b45309;--err:#b91c1c;--ok:#15803d}
+*{box-sizing:border-box}body{margin:0;font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+.wrap{max-width:1020px;margin:0 auto;padding:0 20px}
+header{background:var(--acc);color:#fff}
+header .wrap{display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+.logo{font-weight:800;font-size:20px;letter-spacing:.3px}.logo span{color:#86efac}
+nav a{color:#e5f3ea;text-decoration:none;margin-left:22px;font-size:14.5px}
+.hero{padding:52px 0 8px;text-align:center}
+h1{font-size:clamp(26px,4.4vw,40px);line-height:1.2;margin:0 0 12px}
+.sub{color:var(--mut);max-width:760px;margin:0 auto 8px;font-size:17.5px}
+.badges{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:18px 0 6px}
+.badge{background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:13px;color:var(--mut)}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px;margin:26px 0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.drop{border:2px dashed #9db8a8;border-radius:12px;padding:38px 20px;text-align:center;cursor:pointer;transition:.15s;background:#fbfdfc}
+.drop.on{border-color:var(--acc2);background:#f0fdf4}
+.drop b{color:var(--acc)}
+.row{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:14px}
+select,button.primary{font:inherit;padding:10px 16px;border-radius:9px;border:1px solid var(--line)}
+button.primary{background:var(--acc);color:#fff;border:0;font-weight:600;cursor:pointer;padding:11px 26px}
+button.primary:hover{background:#0f3f22}
+.note{font-size:13px;color:var(--mut);margin-top:10px}
+#report{display:none;margin-top:22px;text-align:left}
+.verdict{font-size:20px;font-weight:700;padding:14px 18px;border-radius:10px;margin-bottom:14px}
+.v-ok{background:#f0fdf4;color:var(--ok);border:1px solid #bbf7d0}
+.v-bad{background:#fef2f2;color:var(--err);border:1px solid #fecaca}
+.kv{display:grid;grid-template-columns:190px 1fr;gap:4px 14px;font-size:14.5px;margin:10px 0}
+.kv div:nth-child(odd){color:var(--mut)}
+.finding{border-left:3px solid var(--err);background:#fff7f7;padding:8px 12px;margin:8px 0;font-size:14px;border-radius:0 8px 8px 0}
+.finding.warn{border-color:var(--warn);background:#fffbf3}
+.finding code{font-size:12.5px;color:var(--mut)}
+.spin{display:none;margin-top:16px;color:var(--mut)}
+.spin.on{display:block}
+h2{font-size:26px;margin:8px 0 6px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:18px}
+.tier{border:1px solid var(--line);border-radius:12px;padding:20px;background:#fff;position:relative}
+.tier.hot{border-color:var(--acc2);box-shadow:0 0 0 3px #dcfce7}
+.tier .price{font-size:26px;font-weight:800;margin:6px 0}
+.tier .price small{font-size:13px;color:var(--mut);font-weight:400}
+.tier ul{padding-left:18px;margin:10px 0;color:var(--mut);font-size:14.5px}
+pre{background:#0b1220;color:#d1e7dd;border-radius:10px;padding:18px;overflow-x:auto;font-size:13px;line-height:1.5}
+pre .c{color:#7c94a8}
+.cta{display:inline-block;background:var(--acc);color:#fff;text-decoration:none;padding:12px 26px;border-radius:9px;font-weight:600;margin-top:8px}
+.cta.ghost{background:#fff;color:var(--acc);border:1.5px solid var(--acc)}
+table.mand{width:100%;border-collapse:collapse;font-size:14.5px}
+table.mand th,table.mand td{border:1px solid var(--line);padding:9px 12px;text-align:left}
+table.mand th{background:#f1f5f2}
+details{border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:10px 0;background:#fff}
+summary{font-weight:600;cursor:pointer}
+footer{color:var(--mut);font-size:13.5px;padding:30px 0 40px;text-align:center}
+footer a{color:var(--mut)}
+.anchor{scroll-margin-top:20px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<div class="logo">Factur<span>ata</span></div>
+<nav><a href="#validator">Free validator</a><a href="#api">API</a><a href="#pricing">Pricing</a><a href="#mandates">2026 mandates</a><a href="#faq">FAQ</a></nav>
+</div></header>
+
+<div class="wrap">
+<section class="hero">
+<h1>Factur-X &amp; ZUGFeRD validator, free.<br>Compliant e-invoices from JSON, one API call.</h1>
+<p class="sub">Check any Factur-X / ZUGFeRD PDF or EN 16931 CII XML against the official schema and business rules, including the French 2026 (Flux 2) ruleset. Or generate compliant e-invoices programmatically. No signup for the validator. Nothing is stored.</p>
+<div class="badges"><span class="badge">EN 16931 XSD + full schematron</span><span class="badge">French 2026 CTC rules</span><span class="badge">Stateless: zero retention</span><span class="badge">Factur-X 1.09 / ZUGFeRD 2.3</span></div>
+</section>
+
+<section class="card anchor" id="validator">
+<h2>Free e-invoice validator</h2>
+<div class="drop" id="drop"><b>Drop a Factur-X / ZUGFeRD PDF or CII XML here</b><br>or click to choose a file (max 3 MB)<input type="file" id="file" hidden accept=".pdf,.xml"></div>
+<div class="row">
+<select id="ruleset">
+<option value="base">EN 16931 rules (Factur-X / ZUGFeRD)</option>
+<option value="fr-ctc">EN 16931 + French 2026 CTC (Flux 2)</option>
+</select>
+<button class="primary" id="go" disabled>Validate</button>
+</div>
+<div class="spin" id="spin">⏳ <span id="spinmsg">Validating…</span></div>
+<div class="note">Free processing runs on capacity that sleeps when idle: the first request of the hour can take up to a minute. Files are processed in memory only.</div>
+<div id="report"></div>
+</section>
+
+<section class="card anchor" id="api">
+<h2>The e-invoicing API</h2>
+<p>Send plain JSON, get back a compliant <b>Factur-X PDF (with embedded XML)</b> or raw CII XML. Totals and VAT breakdowns are computed server-side and every document is validated against the official EN 16931 XSD and schematron before it leaves. Also: validate and extract endpoints for inbound documents.</p>
+<pre><code><span class="c"># One call: JSON in, compliant Factur-X e-invoice out</span>
+curl -X POST https://facturata.p.rapidapi.com/v1/invoices \
+  -H "Content-Type: application/json" \
+  -H "X-RapidAPI-Key: YOUR_KEY" \
+  -d '{
+    "invoice": {
+      "invoice_number": "2026-0042",
+      "issue_date": "2026-07-02",
+      "currency": "EUR",
+      "seller": {"name":"ACME SARL","vat_id":"FR40303265045",
+                 "address":{"line1":"12 Rue Exemple","postcode":"75001","city":"Paris","country":"FR"}},
+      "buyer":  {"name":"Beispiel GmbH",
+                 "address":{"line1":"Musterstr. 1","postcode":"10115","city":"Berlin","country":"DE"}},
+      "lines": [{"description":"Consulting","quantity":10,"unit":"HUR","unit_price":"95.00","vat_rate":"20"}]
+    }
+  }'
+<span class="c"># -> {"facturx_pdf_base64":"...","xml_base64":"...","totals":{...},"validation":{"xsd":"passed","schematron":{"passed":true}}}</span></code></pre>
+<p>Works from any language and from no-code tools (Make, Zapier, n8n) — it is a single HTTPS call. Visual PDF in English, German or French with your accent color.</p>
+<a class="cta" id="rapidapi-cta" href="#pricing">Get an API key →</a>
+</section>
+
+<section class="card anchor" id="pricing">
+<h2>Pricing</h2>
+<div class="grid3">
+<div class="tier"><b>Free</b><div class="price">$0<small>/mo</small></div><ul><li>15 documents/month</li><li>All endpoints</li><li>Unlimited web validator</li></ul></div>
+<div class="tier hot"><b>Pro</b><div class="price">$19<small>/mo</small></div><ul><li>500 documents/month</li><li>Generate + validate + extract</li><li>French CTC ruleset</li><li>Cancel anytime</li></ul></div>
+<div class="tier"><b>Ultra</b><div class="price">$49<small>/mo</small></div><ul><li>5,000 documents/month</li><li>Everything in Pro</li></ul></div>
+<div class="tier"><b>Mega</b><div class="price">$149<small>/mo</small></div><ul><li>30,000 documents/month</li><li>Everything in Pro</li></ul></div>
+</div>
+<p class="note">Billing, keys and metering are handled by RapidAPI. Compare: per-recipient credential platforms charge this for a handful of invoices; document APIs with e-invoice support start at ~$29/mo with far fewer compliance checks.</p>
+</section>
+
+<section class="card anchor" id="mandates">
+<h2>The EU e-invoicing wave, in one table</h2>
+<table class="mand">
+<tr><th>Country</th><th>Receive mandatory</th><th>Issue mandatory</th><th>Accepted formats</th></tr>
+<tr><td><b>Germany</b></td><td>Since Jan 2025 (all B2B)</td><td>2027 (&gt;€800k turnover), 2028 (all)</td><td>ZUGFeRD 2.x / Factur-X, XRechnung</td></tr>
+<tr><td><b>France</b></td><td>Sept 2026 (all businesses)</td><td>Sept 2026 (large/mid), Sept 2027 (SME)</td><td>Factur-X, UBL, CII via PDP platforms</td></tr>
+<tr><td><b>Belgium</b></td><td colspan="2">B2B via Peppol from Jan 2026</td><td>Peppol BIS (EN 16931)</td></tr>
+<tr><td><b>EU (ViDA)</b></td><td colspan="2">Cross-border digital reporting from 2030</td><td>EN 16931 family</td></tr>
+</table>
+<p class="note">Dates summarized from official mandate timelines; always confirm your specific obligations with your tax advisor.</p>
+</section>
+
+<section class="anchor" id="faq">
+<h2 style="margin-top:26px">FAQ</h2>
+<details><summary>What exactly does the validator check?</summary><p>Three layers: (1) structure against the official Factur-X / ZUGFeRD XSD for the detected profile, (2) the full EN 16931 schematron business rules (the BR-*, BR-CO-*, BR-S/AE/IC-* rules on totals, VAT breakdowns, required fields), and (3) optionally the French CTC (Flux 2) ruleset for the 2026 mandate. PDF inputs first get their embedded XML extracted and checked for presence and readability.</p></details>
+<details><summary>What is the difference between Factur-X and ZUGFeRD?</summary><p>Technically none at profile level: ZUGFeRD 2.x (Germany) and Factur-X (France) are the same standard published by FeRD and FNFE-MPE. Both embed EN 16931 CII XML inside a PDF/A-3 file.</p></details>
+<details><summary>Do you support XRechnung?</summary><p>Validation detects and checks CII-syntax XRechnung against EN 16931 base rules today; the KoSIT-specific ruleset is on the roadmap. Generation currently targets Factur-X profiles (BASIC WL, EN 16931, EXTENDED).</p></details>
+<details><summary>Is this legal advice? Can you certify my invoices?</summary><p>No. Facturata performs technical generation and validation against the published standards. It does not certify legal compliance and does not replace your accountant, tax advisor or (in France) your registered PDP platform.</p></details>
+<details><summary>What happens to my data?</summary><p>Documents are processed in memory and returned in the response. No database, no object storage, no retention. That is also why the service can be this cheap.</p></details>
+</section>
+
+<footer>
+<div>© 2026 Facturata · <a href="#validator">Validator</a> · <a href="#api">API</a> · Contact: certly.app.live+facturata@gmail.com</div>
+<div style="margin-top:6px">Facturata provides technical document processing, not legal or tax advice.</div>
+</footer>
+</div>
+
+<script>
+const API_BASE = "https://facturata-api.onrender.com";
+let fileData = null, fileName = "";
+const drop = document.getElementById('drop'), fi = document.getElementById('file'),
+      go = document.getElementById('go'), spin = document.getElementById('spin'),
+      spinmsg = document.getElementById('spinmsg'), report = document.getElementById('report');
+drop.onclick = () => fi.click();
+drop.ondragover = e => {e.preventDefault(); drop.classList.add('on');};
+drop.ondragleave = () => drop.classList.remove('on');
+drop.ondrop = e => {e.preventDefault(); drop.classList.remove('on'); if(e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);};
+fi.onchange = () => fi.files[0] && setFile(fi.files[0]);
+function setFile(f){
+  if(f.size > 3*1024*1024){alert("Max 3 MB in the free validator."); return;}
+  const r = new FileReader();
+  r.onload = () => {fileData = r.result.split(',')[1]; fileName = f.name;
+    drop.innerHTML = "<b>"+f.name+"</b> ("+(f.size/1024).toFixed(0)+" KB) — ready";
+    go.disabled = false;};
+  r.readAsDataURL(f);
+}
+async function callApi(attempt){
+  const ctl = new AbortController();
+  const t = setTimeout(()=>ctl.abort(), 90000);
+  try{
+    const res = await fetch(API_BASE + "/free/validate", {method:"POST", signal: ctl.signal,
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({file_base64: fileData, check: document.getElementById('ruleset').value})});
+    clearTimeout(t);
+    return res;
+  }catch(err){
+    clearTimeout(t);
+    if(attempt < 2){ spinmsg.textContent = "Waking the validator up (free capacity sleeps when idle, ~60s)…";
+      await new Promise(r=>setTimeout(r, 8000)); return callApi(attempt+1); }
+    throw err;
+  }
+}
+go.onclick = async () => {
+  report.style.display="none"; spin.classList.add('on'); spinmsg.textContent="Validating…"; go.disabled=true;
+  try{
+    const res = await callApi(0);
+    const j = await res.json();
+    if(!res.ok){ throw new Error(j.detail || res.status); }
+    render(j);
+  }catch(e){
+    report.innerHTML = '<div class="verdict v-bad">Could not validate: '+(e.message||e)+'</div>';
+    report.style.display="block";
+  }
+  spin.classList.remove('on'); go.disabled=false;
+};
+function esc(s){return String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function render(j){
+  let h = "";
+  if(j.error){ h += '<div class="verdict v-bad">✗ Not a valid e-invoice</div><div class="finding">'+esc(j.error)+'</div>'; }
+  else{
+    h += j.valid ? '<div class="verdict v-ok">✓ Valid '+esc(j.flavor)+' ('+esc(j.profile||"?")+' profile)</div>'
+                 : '<div class="verdict v-bad">✗ Invalid — '+((j.checks.xsd.errors||[]).length + (j.checks.schematron.errors||[]).length)+' error(s) found</div>';
+    if(j.summary && Object.keys(j.summary).length){
+      h += '<div class="kv">';
+      for(const [k,v] of Object.entries(j.summary)) h += '<div>'+esc(k.replace(/_/g,' '))+'</div><div><b>'+esc(v)+'</b></div>';
+      h += '</div>';
+    }
+    const errs = [...(j.checks.xsd.errors||[]), ...(j.checks.schematron.errors||[])];
+    const warns = j.checks.schematron.warnings||[];
+    errs.forEach(e => h += '<div class="finding"><b>'+esc(e.rule||"Error")+'</b> — '+esc(e.text)+(e.location?'<br><code>'+esc(e.location)+'</code>':'')+'</div>');
+    warns.forEach(w => h += '<div class="finding warn"><b>'+esc(w.rule||"Warning")+'</b> — '+esc(w.text)+'</div>');
+    if(j.valid && !warns.length) h += '<div class="note">No warnings. This document passes the official EN 16931 rule set'+(j.checks.ruleset==='fr-ctc'?' and the French CTC checks':'')+'.</div>';
+    h += '<div class="note" style="margin-top:14px">Need to validate in bulk or generate compliant invoices? <a href="#api">Use the API</a>.</div>';
+  }
+  report.innerHTML = h; report.style.display = "block";
+}
+</script>
+</body>
+</html>
