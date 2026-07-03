@@ -24,4 +24,16 @@
   <xhtml:link rel="alternate" hreflang="fr" href="https://facturata.com/fr/"/>
   <xhtml:link rel="alternate" hreflang="x-default" href="https://facturata.com/"/>
 </url>
+<url>
+  <loc>https://facturata.com/fr/api-facture-electronique/</loc>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>https://facturata.com/fr/valider-factur-x/</loc>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>https://facturata.com/de/zugferd-api/</loc>
+  <changefreq>monthly</changefreq>
+</url>
 </urlset>
