@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API facture électronique : générez des factures Factur-X conformes | Facturata</title>
+<meta name="description" content="API de facturation électronique : transformez du JSON en factures Factur-X conformes EN 16931, validées XSD + Schematron. Niveau gratuit, échéance septembre 2026.">
+<link rel="canonical" href="https://facturata.com/fr/api-facture-electronique/">
+<style>
+:root{--acc:#14532d;--ok:#15803d;--bg:#f7f9f8;--ink:#111827;--mut:#5b6472;--line:#e2e8f0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+header{background:var(--acc);color:#fff;padding:14px 0}
+.logo{font-weight:800;font-size:19px}.logo span{color:#86c5a0}.logo a{color:inherit;text-decoration:none}
+h1{font-size:34px;line-height:1.2;letter-spacing:-.5px;margin:34px 0 12px}
+h2{font-size:22px;margin:34px 0 10px}
+.lead{font-size:17.5px;color:var(--mut)}
+pre{background:#0f1630;color:#e6e9f5;border-radius:10px;padding:15px 17px;overflow:auto;font-size:13px;line-height:1.5}
+.cta{display:inline-block;background:var(--acc);color:#fff;padding:11px 18px;border-radius:9px;font-weight:700;text-decoration:none;margin:6px 10px 6px 0}
+.cta.sec{background:#fff;color:var(--acc);border:2px solid var(--acc)}
+.qa{border-bottom:1px solid var(--line);padding:12px 0}.qa b{display:block}
+.note{background:#fff;border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:8px;padding:12px 16px;font-size:14.5px;margin:18px 0}
+footer{margin:44px 0 26px;color:var(--mut);font-size:13px}
+footer a{color:var(--mut)}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="logo"><a href="/fr/">Factur<span>ata</span></a></div></div></header>
+<div class="wrap">
+<h1>API facture électronique : du JSON à la facture Factur-X conforme</h1>
+
+<p class="lead">Votre logiciel émet des factures ? À partir du 1er septembre 2026, elles devront exister au format électronique structuré (Factur-X, UBL ou CII) pour circuler via les plateformes agréées. Une API de facturation électronique transforme vos données de facturation existantes en factures conformes EN 16931, sans réécrire votre moteur de facturation.</p>
+<div class="note"><b>L'essentiel :</b> votre application n'a pas besoin d'être une plateforme agréée (PA). Elle doit produire un format socle conforme — c'est exactement ce que fait une API de génération Factur-X — puis transmettre via la PA de votre choix.</div>
+<h2>Comment ça marche</h2>
+<p>Vous envoyez votre facture en JSON (vendeur, acheteur, lignes, TVA). L'API renvoie un PDF Factur-X (lisible par l'humain, XML CII embarqué pour la machine) ou le XML seul. Les totaux et la ventilation TVA sont recalculés côté serveur, puis le fichier est validé contre le schéma XSD officiel et l'intégralité des règles Schematron avant de sortir. Impossible d'émettre une facture non conforme.</p>
+<pre>POST /v1/invoices
+{ "invoice": { "invoice_number": "2026-0042", "currency": "EUR",
+    "seller": {...}, "buyer": {...},
+    "lines": [{ "description": "Prestation", "quantity": 10,
+                "unit_price": "95.00", "vat_rate": "20" }] },
+  "options": { "profile": "en16931", "output": "pdf", "language": "fr" } }</pre>
+<h2>Questions fréquentes</h2>
+<div class="qa"><b>Quels formats sont générés ?</b>Factur-X 1.09 (équivalent ZUGFeRD 2.x), profils basicwl, en16931 et extended, en PDF/A-3 ou XML CII seul.</div>
+<div class="qa"><b>Où vont mes données ?</b>Nulle part : traitement en mémoire, aucun document conservé. Les conversations RGPD sont courtes.</div>
+<div class="qa"><b>Il y a un niveau gratuit ?</b>Oui, 15 documents/mois, sans carte bancaire — de quoi intégrer et tester.</div>
+<p><a class="cta" href="https://rapidapi.com/certlyapplive/api/facturata">Obtenir une clé API (gratuit)</a> <a class="cta sec" href="/fr/#validator">Tester le validateur gratuit</a></p>
+
+<footer>Facturata — API Factur-X &amp; e-invoicing. <a href="/fr/">Accueil</a> · <a href="https://rapidapi.com/certlyapplive/api/facturata">API</a></footer>
+</div>
+</body>
+</html>
