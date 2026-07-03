@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZUGFeRD API : konforme E-Rechnungen (EN 16931) per API erzeugen | Facturata</title>
+<meta name="description" content="ZUGFeRD/Factur-X per API: JSON rein, validierte E-Rechnung raus. Offizielles XSD + Schematron, kostenloser Tarif, E-Rechnungspflicht 2025-2028.">
+<link rel="canonical" href="https://facturata.com/de/zugferd-api/">
+<style>
+:root{--acc:#14532d;--ok:#15803d;--bg:#f7f9f8;--ink:#111827;--mut:#5b6472;--line:#e2e8f0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+header{background:var(--acc);color:#fff;padding:14px 0}
+.logo{font-weight:800;font-size:19px}.logo span{color:#86c5a0}.logo a{color:inherit;text-decoration:none}
+h1{font-size:34px;line-height:1.2;letter-spacing:-.5px;margin:34px 0 12px}
+h2{font-size:22px;margin:34px 0 10px}
+.lead{font-size:17.5px;color:var(--mut)}
+pre{background:#0f1630;color:#e6e9f5;border-radius:10px;padding:15px 17px;overflow:auto;font-size:13px;line-height:1.5}
+.cta{display:inline-block;background:var(--acc);color:#fff;padding:11px 18px;border-radius:9px;font-weight:700;text-decoration:none;margin:6px 10px 6px 0}
+.cta.sec{background:#fff;color:var(--acc);border:2px solid var(--acc)}
+.qa{border-bottom:1px solid var(--line);padding:12px 0}.qa b{display:block}
+.note{background:#fff;border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:8px;padding:12px 16px;font-size:14.5px;margin:18px 0}
+footer{margin:44px 0 26px;color:var(--mut);font-size:13px}
+footer a{color:var(--mut)}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="logo"><a href="/de/">Factur<span>ata</span></a></div></div></header>
+<div class="wrap">
+<h1>ZUGFeRD API: E-Rechnungen aus JSON erzeugen</h1>
+
+<p class="lead">Seit 2025 müssen deutsche Unternehmen E-Rechnungen empfangen können; ab 2027/2028 wird die Ausstellung im B2B stufenweise Pflicht. ZUGFeRD 2.x (identisch mit Factur-X) ist das hybride Format: ein PDF/A-3 mit eingebettetem CII-XML nach EN 16931. Eine ZUGFeRD-API erzeugt diese Rechnungen aus Ihren vorhandenen Daten.</p>
+<div class="note"><b>Kernpunkt:</b> Ihre Software muss kein zertifiziertes System sein — sie muss nur konforme Dateien erzeugen. Genau das leistet die API: JSON rein, validierte ZUGFeRD/Factur-X-Rechnung raus.</div>
+<h2>So funktioniert es</h2>
+<pre>POST /v1/invoices
+{ "invoice": { "invoice_number": "2026-0042", "currency": "EUR",
+    "seller": {...}, "buyer": {...},
+    "lines": [{ "description": "Beratung", "quantity": 10,
+                "unit_price": "95.00", "vat_rate": "19" }] },
+  "options": { "profile": "en16931", "output": "pdf", "language": "de" } }</pre>
+<p>Summen und Umsatzsteuer werden serverseitig berechnet; jede Datei wird vor der Rückgabe gegen das offizielle XSD und die vollständigen Schematron-Regeln geprüft. Auch XRechnung-nahe Prüfungen (EN 16931 CII) sind abgedeckt; verarbeitet wird im Speicher, nichts wird gespeichert.</p>
+<h2>Häufige Fragen</h2>
+<div class="qa"><b>ZUGFeRD oder XRechnung?</b>ZUGFeRD/Factur-X ist hybrid (PDF + XML) und im B2B verbreitet; XRechnung ist reines XML und v. a. im B2G Pflicht. Beide basieren auf EN 16931 — die Validierung deckt die gemeinsamen Regeln ab.</div>
+<div class="qa"><b>Gibt es einen kostenlosen Tarif?</b>Ja, 15 Dokumente/Monat ohne Kreditkarte, plus ein kostenloser Online-Validator.</div>
+<div class="qa"><b>Was ist mit bestehenden PDFs?</b><code>POST /v1/extract</code> zieht das XML aus jeder Factur-X/ZUGFeRD-Datei; <code>POST /v1/validate</code> prüft beliebige Dateien.</div>
+<p><a class="cta" href="https://rapidapi.com/certlyapplive/api/facturata">API-Key holen (kostenlos)</a> <a class="cta sec" href="/de/#validator">Kostenloser Validator</a></p>
+
+<footer>Facturata — API Factur-X &amp; e-invoicing. <a href="/de/">Accueil</a> · <a href="https://rapidapi.com/certlyapplive/api/facturata">API</a></footer>
+</div>
+</body>
+</html>
