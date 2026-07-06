@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Factur-X avec Odoo : générer et valider (réforme 2026) | Facturata</title>
+<meta name="description" content="Odoo gère le Factur-X nativement avec la localisation française. Voici comment vérifier que vos factures passent les règles EN 16931 et françaises avant septembre 2026, sans inscription.">
+<link rel="canonical" href="https://facturata.com/fr/factur-x-odoo/">
+<style>
+:root{--acc:#14532d;--ok:#15803d;--bg:#f7f9f8;--ink:#111827;--mut:#5b6472;--line:#e2e8f0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+header{background:var(--acc);color:#fff;padding:14px 0}
+.logo{font-weight:800;font-size:19px}.logo span{color:#86c5a0}.logo a{color:inherit;text-decoration:none}
+h1{font-size:34px;line-height:1.2;letter-spacing:-.5px;margin:34px 0 12px}
+h2{font-size:22px;margin:34px 0 10px}
+.lead{font-size:17.5px;color:var(--mut)}
+pre{background:#0f1630;color:#e6e9f5;border-radius:10px;padding:15px 17px;overflow:auto;font-size:13px;line-height:1.5}
+.cta{display:inline-block;background:var(--acc);color:#fff;padding:11px 18px;border-radius:9px;font-weight:700;text-decoration:none;margin:6px 10px 6px 0}
+.cta.sec{background:#fff;color:var(--acc);border:2px solid var(--acc)}
+.qa{border-bottom:1px solid var(--line);padding:12px 0}.qa b{display:block}
+.note{background:#fff;border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:8px;padding:12px 16px;font-size:14.5px;margin:18px 0}
+.rel{margin:30px 0 0;font-size:14.5px}.rel a{color:var(--acc);font-weight:600}
+footer{margin:44px 0 26px;color:var(--mut);font-size:13px}
+footer a{color:var(--mut)}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="logo"><a href="/fr/">Factur<span>ata</span></a></div></div></header>
+<div class="wrap">
+<h1>Factur-X avec Odoo : être prêt pour septembre 2026</h1>
+
+<p class="lead">Odoo produit du Factur-X nativement avec la localisation française. C'est un bon point de départ, mais chaque facture doit passer les contrôles de la plateforme agréée. Voici ce qu'Odoo gère déjà et comment vérifier vos fichiers avant qu'ils soient rejetés.</p>
+
+<h2>Ce qu'Odoo gère déjà</h2>
+<p>Odoo prend en charge les formats réglementaires (UBL, CII et Factur-X) et intègre un point d'accès Peppol. Le Factur-X est natif dans Odoo 17, 18 et 19 dès que la <b>localisation française</b> est installée : dans Réglages, section « Facturation électronique », activez Factur-X (FR). Le module français de facturation électronique d'Odoo, qui gère le rôle de plateforme agréée, est passé en production début juin 2026 sur les branches 18 et 19.</p>
+<div class="note">Rappel du calendrier : au <b>1er septembre 2026</b>, toutes les entreprises doivent pouvoir <b>recevoir</b> une facture électronique, et les grandes entreprises et ETI doivent l'<b>émettre</b>. Les autres entreprises émettent à partir du 1er septembre 2027.</div>
+
+<h2>Pourquoi valider quand même</h2>
+<p>Le format généré peut être valide sans que les <b>données</b> le soient. Les rejets viennent le plus souvent de ~200 règles métier EN 16931 et du référentiel français : totaux incohérents à cause des arrondis, ventilation de TVA qui ne correspond pas aux lignes, motif d'exonération manquant, ou l'un des quatre nouveaux champs obligatoires de septembre 2026 (SIREN du client, adresse de livraison, type d'opération, option TVA sur les débits). Une configuration Odoo incomplète (compte, taxes, mentions) produit un fichier qui échoue au contrôle.</p>
+
+<h2>Valider un fichier Odoo en 10 secondes</h2>
+<p>Depuis Odoo, téléchargez le PDF Factur-X d'une facture, puis déposez-le dans le <a href="/fr/#validator">validateur gratuit</a>. Vous obtenez la liste exacte des règles en échec (XSD officiel + Schematron EN 16931 + référentiel français 2026), avec le libellé de chaque erreur. Sans inscription, aucun fichier conservé. Le validateur teste aussi les factures reçues, utile pour valider votre chaîne de réception dès 2026.</p>
+
+<h2>Automatiser la vérification</h2>
+<p>La même vérification existe en API (<code>POST /v1/validate</code>, option <code>check: "fr-ctc"</code>). Intégrable dans un flux autour d'Odoo, avant l'envoi vers la plateforme.</p>
+<pre>POST /v1/validate
+{ "file_base64": "&lt;votre facture Odoo en base64&gt;", "check": "fr-ctc" }</pre>
+<p><a class="cta" href="/fr/#validator">Valider un fichier maintenant</a> <a class="cta sec" href="https://rapidapi.com/certlyapplive/api/facturata">API de validation</a></p>
+
+<h2>Questions fréquentes</h2>
+<div class="qa"><b>Faut-il un module payant pour le Factur-X dans Odoo ?</b>Non : le Factur-X est natif avec la localisation française sur Odoo 17/18/19, sans surcoût d'activation.</div>
+<div class="qa"><b>Odoo suffit-il pour être conforme ?</b>Odoo peut jouer le rôle de plateforme agréée via son module dédié. La validation en amont reste utile pour éviter les rejets et pour tester les fichiers reçus d'autres éditeurs.</div>
+<div class="qa"><b>Et si j'utilise une autre PA que celle d'Odoo ?</b>Le validateur est indépendant de la plateforme : il contrôle le fichier lui-même, quelle que soit la PA choisie.</div>
+
+<p class="rel">Guides liés :
+<a href="/fr/valider-factur-x/">Valider un Factur-X</a> ·
+<a href="/fr/codes-rejet-pa/">Codes de rejet PA</a> ·
+<a href="/fr/factur-x-dolibarr/">Factur-X avec Dolibarr</a> ·
+<a href="/fr/factur-x-sage/">Factur-X avec Sage</a> ·
+<a href="/fr/api-facture-electronique/">API facture électronique</a></p>
+
+<footer>Facturata — API Factur-X &amp; e-invoicing. <a href="/fr/">Accueil</a> · <a href="https://rapidapi.com/certlyapplive/api/facturata">API</a></footer>
+</div>
+</body>
+</html>
