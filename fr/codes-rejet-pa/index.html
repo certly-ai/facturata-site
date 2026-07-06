@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Codes de rejet PA : pourquoi votre facture électronique est refusée (2026) | Facturata</title>
+<meta name="description" content="Comprendre les codes de rejet des plateformes agréées (norme AFNOR XP Z12-012, 45 motifs). Les causes fréquentes et comment tester un fichier Factur-X avant qu'il soit refusé, sans inscription.">
+<link rel="canonical" href="https://facturata.com/fr/codes-rejet-pa/">
+<style>
+:root{--acc:#14532d;--ok:#15803d;--bg:#f7f9f8;--ink:#111827;--mut:#5b6472;--line:#e2e8f0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+header{background:var(--acc);color:#fff;padding:14px 0}
+.logo{font-weight:800;font-size:19px}.logo span{color:#86c5a0}.logo a{color:inherit;text-decoration:none}
+h1{font-size:34px;line-height:1.2;letter-spacing:-.5px;margin:34px 0 12px}
+h2{font-size:22px;margin:34px 0 10px}
+.lead{font-size:17.5px;color:var(--mut)}
+pre{background:#0f1630;color:#e6e9f5;border-radius:10px;padding:15px 17px;overflow:auto;font-size:13px;line-height:1.5}
+.cta{display:inline-block;background:var(--acc);color:#fff;padding:11px 18px;border-radius:9px;font-weight:700;text-decoration:none;margin:6px 10px 6px 0}
+.cta.sec{background:#fff;color:var(--acc);border:2px solid var(--acc)}
+.qa{border-bottom:1px solid var(--line);padding:12px 0}.qa b{display:block}
+.note{background:#fff;border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:8px;padding:12px 16px;font-size:14.5px;margin:18px 0}
+.rel{margin:30px 0 0;font-size:14.5px}.rel a{color:var(--acc);font-weight:600}
+footer{margin:44px 0 26px;color:var(--mut);font-size:13px}
+footer a{color:var(--mut)}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="logo"><a href="/fr/">Factur<span>ata</span></a></div></div></header>
+<div class="wrap">
+<h1>Codes de rejet PA : pourquoi votre facture est refusée</h1>
+
+<p class="lead">À partir de septembre 2026, toute facture B2B transite par une plateforme agréée qui peut la rejeter. Vous recevez alors un code motif, pas une explication claire. Voici d'où viennent ces codes, les causes concrètes les plus fréquentes, et comment tester un fichier avant de l'envoyer.</p>
+
+<h2>D'où viennent les codes de rejet</h2>
+<p>Le référentiel français est la norme AFNOR <b>XP Z12-012</b> (version 1.3, publiée le 26 février 2026). Elle définit <b>45 codes motifs</b> de rejet, de refus et de litige, et s'appuie sur <b>316 règles de gestion</b> au total : 96 règles BR-FR (formats, calculs, cohérence attendus), 45 règles BR-FR-CPRO propres au secteur public via Chorus Pro, 140 règles de gestion et 28 règles liées aux statuts du cycle de vie. Les formats de facture restent alignés sur la norme européenne EN 16931.</p>
+
+<h2>Les 6 familles de rejet</h2>
+<div class="qa"><b>1. Rejets techniques à l'émission</b>Flux irrécupérables (IRR_*) et rejets fonctionnels (REJ_*) : le fichier n'est pas exploitable en l'état.</div>
+<div class="qa"><b>2. Erreurs de routage et d'adressage</b>Le destinataire n'est pas identifié correctement (SIREN, identifiant de routage).</div>
+<div class="qa"><b>3. Erreurs de calcul et de montants</b>Totaux, arrondis, sous-totaux qui ne tombent pas juste.</div>
+<div class="qa"><b>4. Non-conformités TVA et mentions légales</b>Ventilation de TVA, taux, motif d'exonération, mentions obligatoires.</div>
+<div class="qa"><b>5. Refus métier du destinataire</b>La facture est lisible mais refusée sur le fond (commande, réception).</div>
+<div class="qa"><b>6. Litiges commerciaux</b>Contestation sur le montant ou la prestation.</div>
+
+<h2>Les causes concrètes les plus fréquentes</h2>
+<p>La plupart des rejets « techniques » se réduisent à quelques erreurs :</p>
+<div class="qa"><b>BR-CO-15 — total TTC incohérent</b>Le total ne correspond pas à la somme HT + TVA, souvent à cause d'arrondis ligne à ligne.</div>
+<div class="qa"><b>BR-S-08 — ventilation de TVA</b>La ventilation par taux ne correspond pas aux lignes de la facture.</div>
+<div class="qa"><b>Adressage / SIREN manquant ou invalide</b>Identifiant du destinataire absent ou au mauvais format.</div>
+<div class="qa"><b>Mentions ou motif d'exonération manquants</b>Une catégorie de TVA exonérée sans le motif requis.</div>
+<div class="qa"><b>Nouveaux champs obligatoires 2026</b>SIREN du client, adresse de livraison, type d'opération, option TVA sur les débits (grandes entreprises et ETI dès septembre 2026).</div>
+
+<h2>Tester avant que la PA rejette</h2>
+<p>Vous n'avez pas besoin d'attendre le rejet. Déposez votre PDF Factur-X (ou votre XML CII) dans le <a href="/fr/#validator">validateur gratuit</a> : il applique le XSD officiel, le Schematron EN 16931 complet et le référentiel français 2026, et vous rend la liste exacte des règles en échec avec leur libellé. Sans inscription, aucun fichier conservé.</p>
+
+<h2>Automatiser le contrôle</h2>
+<p>La même vérification existe en API (<code>POST /v1/validate</code>, option <code>check: "fr-ctc"</code> pour les règles françaises), à placer avant chaque envoi ou après chaque réception.</p>
+<pre>POST /v1/validate
+{ "file_base64": "&lt;votre fichier en base64&gt;", "check": "fr-ctc" }</pre>
+<p><a class="cta" href="/fr/#validator">Tester un fichier maintenant</a> <a class="cta sec" href="https://rapidapi.com/certlyapplive/api/facturata">API de validation</a></p>
+
+<h2>Questions fréquentes</h2>
+<div class="qa"><b>Un rejet est-il toujours technique ?</b>Non. Une facture au format valide peut être refusée pour un motif métier ou un litige. Le validateur couvre la partie technique et réglementaire, en amont.</div>
+<div class="qa"><b>Où trouver la liste officielle des codes ?</b>Dans la norme AFNOR XP Z12-012 et les documents publiés par l'administration. Notre validateur renvoie le libellé de chaque règle en échec pour vous éviter de chercher.</div>
+<div class="qa"><b>Cela marche-t-il pour Chorus Pro (secteur public) ?</b>Oui : utilisez l'option des règles françaises, qui couvre le socle EN 16931 et le référentiel national.</div>
+
+<p class="rel">Guides liés :
+<a href="/fr/valider-factur-x/">Valider un Factur-X</a> ·
+<a href="/fr/factur-x-dolibarr/">Factur-X avec Dolibarr</a> ·
+<a href="/fr/factur-x-odoo/">Factur-X avec Odoo</a> ·
+<a href="/fr/factur-x-sage/">Factur-X avec Sage</a> ·
+<a href="/fr/api-facture-electronique/">API facture électronique</a></p>
+
+<footer>Facturata — API Factur-X &amp; e-invoicing. <a href="/fr/">Accueil</a> · <a href="https://rapidapi.com/certlyapplive/api/facturata">API</a></footer>
+</div>
+</body>
+</html>
