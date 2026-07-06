@@ -36,4 +36,20 @@
   <loc>https://facturata.com/de/zugferd-api/</loc>
   <changefreq>monthly</changefreq>
 </url>
+<url>
+  <loc>https://facturata.com/fr/codes-rejet-pa/</loc>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>https://facturata.com/fr/factur-x-dolibarr/</loc>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>https://facturata.com/fr/factur-x-odoo/</loc>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>https://facturata.com/fr/factur-x-sage/</loc>
+  <changefreq>monthly</changefreq>
+</url>
 </urlset>
