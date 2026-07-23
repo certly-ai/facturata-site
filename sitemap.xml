@@ -52,4 +52,16 @@
   <loc>https://facturata.com/fr/factur-x-sage/</loc>
   <changefreq>monthly</changefreq>
 </url>
+<url>
+  <loc>https://facturata.com/fr/factur-x-windev/</loc>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>https://facturata.com/fr/pour-qui/</loc>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>https://facturata.com/fr/saas-facturation/</loc>
+  <changefreq>monthly</changefreq>
+</url>
 </urlset>
