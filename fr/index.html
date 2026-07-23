@@ -102,6 +102,18 @@ footer a{color:var(--mut)}
 <div class="spin" id="spin">⏳ <span id="spinmsg">Validation en cours…</span></div>
 <div class="note">Le traitement gratuit tourne sur une capacité qui se met en veille&nbsp;: la première requête de l’heure peut prendre jusqu’à une minute. Les fichiers sont traités uniquement en mémoire. Les libellés des règles et des erreurs proviennent du référentiel officiel et sont affichés en anglais (textes officiels).</div>
 <div id="report"></div>
+<div id="capture" style="display:none;margin-top:20px;padding:16px 18px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px">
+  <div id="capture-form">
+    <b>Restez conforme sans surveiller les textes.</b>
+    <div style="font-size:14px;color:#5b6472;margin:4px 0 10px">Recevez les alertes de changement des règles EN 16931 et du référentiel français (nouveaux millésimes, règles qui durcissent). Pas de spam.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <input type="email" id="capture-email" placeholder="vous@exemple.fr" style="flex:1;min-width:200px;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font:inherit">
+      <button class="primary" id="capture-go" style="padding:10px 20px">Recevoir les alertes</button>
+    </div>
+    <div id="capture-err" style="display:none;font-size:13px;color:#b91c1c;margin-top:6px">Adresse invalide.</div>
+  </div>
+  <div id="capture-done" style="display:none;font-weight:600;color:#15803d">Merci, c'est noté. Vous recevrez les alertes de conformité.</div>
+</div>
 </section>
 
 <section class="card anchor" id="api">
@@ -170,6 +182,7 @@ curl -X POST https://facturata.p.rapidapi.com/v1/invoices \
 
 <script>
 const API_BASE = "https://facturata-api.onrender.com";
+const CAPTURE_ENDPOINT = "https://script.google.com/macros/s/AKfycbzUc3F039dL28cshPqgD6YjLSBmNr5kBL-5NK2gRqPECCP-BlNq6odl8S1Ar6x5SO4Y/exec";
 let fileData = null, fileName = "";
 const drop = document.getElementById('drop'), fi = document.getElementById('file'),
       go = document.getElementById('go'), spin = document.getElementById('spin'),
@@ -236,7 +249,21 @@ function render(j){
     h += '<div class="note" style="margin-top:14px">Besoin de valider en masse ou de générer des factures conformes&nbsp;? <a href="#api">Passez par l’API</a>.</div>';
   }
   report.innerHTML = h; report.style.display = "block";
+  document.getElementById('capture').style.display = "block";
 }
+
+const capEmail = document.getElementById('capture-email'),
+      capGo = document.getElementById('capture-go'),
+      capErr = document.getElementById('capture-err'),
+      capForm = document.getElementById('capture-form'),
+      capDone = document.getElementById('capture-done');
+if(capGo){ capGo.onclick = () => {
+  const em = (capEmail.value||"").trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){ capErr.style.display='block'; return; }
+  capErr.style.display='none';
+  fetch(CAPTURE_ENDPOINT, {method:'POST', mode:'no-cors', body:new URLSearchParams({email:em, source:'validator'})}).catch(()=>{});
+  capForm.style.display='none'; capDone.style.display='block';
+}; }
 </script>
 </body>
 </html>
